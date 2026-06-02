@@ -464,12 +464,36 @@ function InvitesTab({ trainerId }) {
     setCreating(true);
     const code = genCode();
     const expires = new Date(); expires.setDate(expires.getDate()+7);
+
     const { error:e } = await supabase.from("athlete_invites").insert({
       trainer_id:trainerId, athlete_name:name.trim(), athlete_email:email.toLowerCase().trim(),
       code, expires_at:expires.toISOString()
     });
-    if(e) setError(e.message);
-    else { setOk(`Código creado: ${code}`); setName(""); setEmail(""); loadInvites(); setTimeout(()=>setOk(""),8000); }
+
+    if(e){ setError(e.message); setCreating(false); return; }
+
+    // Enviar email automático
+    try {
+      const { data: trainerProfile } = await supabase.from("profiles").select("name").eq("id",trainerId).maybeSingle();
+      const trainerName = trainerProfile?.name || "Tu entrenador";
+
+      await supabase.functions.invoke("send-invite-email", {
+        body: {
+          athleteName: name.trim(),
+          athleteEmail: email.toLowerCase().trim(),
+          trainerName,
+          code,
+          expiresAt: expires.toISOString(),
+        }
+      });
+      setOk(`Invitación enviada a ${email} — Código: ${code}`);
+    } catch(emailErr) {
+      // Si falla el email, el código sigue siendo válido
+      setOk(`Código creado: ${code} (el email no pudo enviarse, compártelo manualmente)`);
+    }
+
+    setName(""); setEmail(""); loadInvites();
+    setTimeout(()=>setOk(""),10000);
     setCreating(false);
   };
 
