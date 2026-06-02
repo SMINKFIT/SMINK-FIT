@@ -442,7 +442,17 @@ function InvitesTab({ trainerId }) {
 
   const loadInvites = async () => {
     setLoading(true);
-    const { data } = await supabase.from("athlete_invites").select("*").eq("trainer_id",trainerId).order("created_at",{ascending:false});
+    // Primero limpiar los expirados y usados de más de 7 días
+    await supabase.from("athlete_invites")
+      .delete()
+      .eq("trainer_id", trainerId)
+      .or("used.eq.true,expires_at.lt.now()");
+    // Luego cargar solo los activos
+    const { data } = await supabase.from("athlete_invites")
+      .select("*")
+      .eq("trainer_id", trainerId)
+      .eq("used", false)
+      .order("created_at", { ascending: false });
     setInvites(data||[]);
     setLoading(false);
   };
@@ -484,40 +494,37 @@ function InvitesTab({ trainerId }) {
         <div style={{color:S.text2,fontSize:12,marginTop:10,lineHeight:1.6}}>El código será válido 7 días. Compártelo con tu atleta para que pueda registrarse.</div>
       </div>
 
-      {/* Lista de invitaciones */}
-      <div style={{color:S.text2,fontSize:12,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",marginBottom:12}}>Invitaciones enviadas</div>
-      {loading ? <div style={{color:S.text2,textAlign:"center",padding:20,fontSize:14}}>Cargando...</div> :
-        !invites.length ? <div style={{color:S.text2,textAlign:"center",padding:20,fontSize:14}}>No has enviado ninguna invitación todavía.</div> :
-        invites.map(inv => {
-          const expired = isExpired(inv.expires_at);
-          const statusColor = inv.used?"#4caf50":expired?"#ff4444":S.accent;
-          const statusLabel = inv.used?"Usado":expired?"Expirado":"Activo";
-          return (
-            <div key={inv.id} style={{...card,marginBottom:10}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
-                <div>
-                  <div style={{color:S.text,fontWeight:700,fontSize:14}}>{inv.athlete_name}</div>
-                  <div style={{color:S.text2,fontSize:13,marginTop:3}}>{inv.athlete_email}</div>
-                </div>
-                <span style={{fontSize:10,fontWeight:700,color:statusColor,background:`${statusColor}15`,borderRadius:20,padding:"3px 10px",textTransform:"uppercase",letterSpacing:0.5}}>
-                  {statusLabel}
-                </span>
-              </div>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                <div>
-                  <div style={{fontFamily:"monospace",fontSize:20,fontWeight:900,color:inv.used||expired?S.text3:S.accent,letterSpacing:3}}>{inv.code}</div>
-                  <div style={{color:S.text2,fontSize:12,marginTop:4}}>Expira: {fmtDate(inv.expires_at)}</div>
-                </div>
-                {!inv.used && !expired && (
-                  <button onClick={()=>revokeInvite(inv.id)} style={{background:"none",border:`1px solid ${S.border2}`,borderRadius:8,color:S.text2,fontSize:12,padding:"6px 12px",fontWeight:600,cursor:"pointer"}}>
-                    Revocar
-                  </button>
-                )}
-              </div>
+      {/* Lista de invitaciones activas */}
+      <div style={{color:S.text2,fontSize:12,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",marginBottom:12}}>Invitaciones activas</div>
+      {loading ? (
+        <div style={{color:S.text2,textAlign:"center",padding:20,fontSize:14}}>Cargando...</div>
+      ) : !invites.length ? (
+        <div style={{textAlign:"center",padding:"20px 0"}}>
+          <div style={{color:S.text2,fontSize:15,fontWeight:600,marginBottom:6}}>No hay invitaciones activas</div>
+          <div style={{color:S.text3,fontSize:13}}>Los códigos usados y expirados se eliminan automáticamente.</div>
+        </div>
+      ) : invites.map(inv => (
+        <div key={inv.id} style={{...card,marginBottom:10}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
+            <div>
+              <div style={{color:S.text,fontWeight:700,fontSize:16}}>{inv.athlete_name}</div>
+              <div style={{color:S.text2,fontSize:13,marginTop:3}}>{inv.athlete_email}</div>
             </div>
-          );
-        })
-      }
+            <span style={{fontSize:11,fontWeight:700,color:S.accent,background:"rgba(200,251,110,0.1)",borderRadius:20,padding:"4px 12px",letterSpacing:0.5}}>
+              Activo
+            </span>
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div>
+              <div style={{fontFamily:"monospace",fontSize:22,fontWeight:900,color:S.accent,letterSpacing:3}}>{inv.code}</div>
+              <div style={{color:S.text2,fontSize:12,marginTop:4}}>Expira: {fmtDate(inv.expires_at)}</div>
+            </div>
+            <button onClick={()=>revokeInvite(inv.id)} style={{background:"none",border:`1px solid ${S.border2}`,borderRadius:8,color:S.text2,fontSize:12,padding:"6px 12px",fontWeight:600,cursor:"pointer"}}>
+              Cancelar
+            </button>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
