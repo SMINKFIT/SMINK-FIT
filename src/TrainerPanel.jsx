@@ -2,16 +2,16 @@ import { useState, useEffect } from "react";
 import { supabase } from "./supabase.js";
 
 // ── Helpers ─────────────────────────────────────────────────
-const S = { // Estilos base
-  bg: "#08090c", bg1: "#0d0e12", bg2: "#12131a", bg3: "#18181c",
-  border: "#1e1f2a", border2: "#252635",
-  text: "#eeeef2", text2: "#6a6a80", text3: "#303042",
+const S = {
+  bg: "#08090c", bg1: "#0d0e12", bg2: "#12131a", bg3: "#1a1a24",
+  border: "#2a2a3a", border2: "#333345",
+  text: "#ffffff", text2: "#aaaabc", text3: "#666680",
   accent: "#c8fb6e", blue: "#5b9cf6",
 };
 
-const card = { background:S.bg2, border:`1px solid ${S.border}`, borderRadius:14, padding:"16px" };
-const inp = { width:"100%", padding:"12px 14px", borderRadius:10, border:`1px solid ${S.border}`, background:S.bg1, color:S.text, fontSize:14, outline:"none", boxSizing:"border-box", fontFamily:"inherit", marginBottom:10 };
-const Label = ({t}) => <div style={{color:S.text3,fontSize:10,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",marginBottom:6}}>{t}</div>;
+const card = { background:S.bg2, border:`1px solid ${S.border}`, borderRadius:14, padding:"18px" };
+const inp = { width:"100%", padding:"13px 14px", borderRadius:10, border:`1px solid ${S.border}`, background:S.bg1, color:S.text, fontSize:15, outline:"none", boxSizing:"border-box", fontFamily:"inherit", marginBottom:10 };
+const Label = ({t}) => <div style={{color:S.text3,fontSize:11,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",marginBottom:7}}>{t}</div>;
 const Err = ({m}) => m ? <div style={{background:"rgba(255,68,68,0.08)",border:"1px solid rgba(255,68,68,0.2)",borderRadius:8,padding:"10px 12px",color:"#ff8080",fontSize:13,marginBottom:12,lineHeight:1.5}}>{m}</div> : null;
 const Ok = ({m}) => m ? <div style={{background:"rgba(200,251,110,0.08)",border:"1px solid rgba(200,251,110,0.2)",borderRadius:8,padding:"10px 12px",color:S.accent,fontSize:13,marginBottom:12}}>{m}</div> : null;
 const Btn = ({label,onClick,loading,color=S.accent,outline=false}) => (
@@ -40,19 +40,19 @@ function Header({ trainerName, tab, setTab, onLogout }) {
   ];
   return (
     <div style={{ background:S.bg1, borderBottom:`1px solid ${S.border}`, position:"sticky", top:0, zIndex:100 }}>
-      <div style={{ padding:"14px 18px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+      <div style={{ padding:"16px 18px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
         <div>
-          <div style={{ color:S.text3, fontSize:9, fontWeight:700, letterSpacing:3, textTransform:"uppercase" }}>SMINK TRAIN</div>
-          <div style={{ color:S.text, fontWeight:800, fontSize:16, letterSpacing:0.3 }}>Panel Entrenador</div>
+          <div style={{ color:S.accent, fontSize:10, fontWeight:700, letterSpacing:3, textTransform:"uppercase" }}>SMINK TRAIN</div>
+          <div style={{ color:S.text, fontWeight:900, fontSize:20, letterSpacing:0.3 }}>Panel Entrenador</div>
         </div>
         <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-          <div style={{ color:S.text2, fontSize:13 }}>{trainerName}</div>
-          <button onClick={onLogout} style={{ background:"none", border:`1px solid ${S.border2}`, borderRadius:8, color:S.text3, padding:"6px 12px", fontSize:12, cursor:"pointer" }}>Salir</button>
+          <div style={{ color:S.text2, fontSize:14, fontWeight:600 }}>{trainerName}</div>
+          <button onClick={onLogout} style={{ background:"none", border:`1px solid ${S.border2}`, borderRadius:8, color:S.text2, padding:"7px 14px", fontSize:13, cursor:"pointer", fontWeight:600 }}>Salir</button>
         </div>
       </div>
       <div style={{ display:"flex", padding:"0 18px", gap:4 }}>
         {tabs.map(t => (
-          <button key={t.id} onClick={()=>setTab(t.id)} style={{ padding:"10px 16px", background:"none", border:"none", borderBottom:`2px solid ${tab===t.id?S.accent:"transparent"}`, color:tab===t.id?S.accent:S.text3, fontWeight:700, fontSize:13, cursor:"pointer", transition:"all 0.2s" }}>
+          <button key={t.id} onClick={()=>setTab(t.id)} style={{ padding:"12px 18px", background:"none", border:"none", borderBottom:`2px solid ${tab===t.id?S.accent:"transparent"}`, color:tab===t.id?S.accent:S.text2, fontWeight:700, fontSize:14, cursor:"pointer", transition:"all 0.2s" }}>
             {t.label}
           </button>
         ))}
@@ -82,7 +82,9 @@ function AthletesList({ trainerId, onSelect }) {
 
   if(!athletes.length) return (
     <div style={{textAlign:"center",padding:"48px 24px"}}>
-      <div style={{color:S.text3,fontSize:13,lineHeight:1.8}}>No tienes atletas todavía.<br/>Crea una invitación para que se unan.</div>
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={S.text3} strokeWidth="1.2" style={{marginBottom:16,display:"block",margin:"0 auto 16px"}}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <div style={{color:S.text2,fontSize:16,fontWeight:700,marginBottom:8}}>Sin atletas todavía</div>
+      <div style={{color:S.text3,fontSize:14,lineHeight:1.7}}>Ve a la pestaña <span style={{color:S.accent,fontWeight:700}}>Invitaciones</span> para añadir tu primer atleta.</div>
     </div>
   );
 
@@ -90,21 +92,21 @@ function AthletesList({ trainerId, onSelect }) {
     <div style={{display:"flex",flexDirection:"column",gap:10}}>
       {athletes.map(a => (
         <button key={a.id} onClick={()=>onSelect(a)}
-          style={{...card,border:`1px solid ${S.border}`,cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:14,width:"100%"}}>
-          <div style={{width:44,height:44,borderRadius:"50%",background:S.bg3,border:`1px solid ${S.border2}`,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:18,color:S.text2,flexShrink:0}}>
+          style={{...card,cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:14,width:"100%"}}>
+          <div style={{width:48,height:48,borderRadius:"50%",background:S.bg3,border:`1px solid ${S.border2}`,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,fontSize:20,color:S.accent,flexShrink:0}}>
             {(a.name||"?")[0].toUpperCase()}
           </div>
           <div style={{flex:1,minWidth:0}}>
-            <div style={{color:S.text,fontWeight:700,fontSize:15,marginBottom:2}}>{a.name||"Sin nombre"}</div>
-            <div style={{color:S.text3,fontSize:12}}>{a.email}</div>
+            <div style={{color:S.text,fontWeight:700,fontSize:16,marginBottom:3}}>{a.name||"Sin nombre"}</div>
+            <div style={{color:S.text2,fontSize:13}}>{a.email}</div>
             {(a.weight||a.goal) && (
-              <div style={{display:"flex",gap:10,marginTop:4}}>
-                {a.weight && <span style={{color:S.text2,fontSize:11}}>{a.weight} kg</span>}
-                {a.goal && <span style={{color:S.text2,fontSize:11}}>· {a.goal.replace("_"," ")}</span>}
+              <div style={{display:"flex",gap:10,marginTop:5}}>
+                {a.weight && <span style={{color:S.text3,fontSize:12}}>{a.weight} kg</span>}
+                {a.goal && <span style={{color:S.text3,fontSize:12}}>· {a.goal.replace("_"," ")}</span>}
               </div>
             )}
           </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={S.text3} strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={S.text2} strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
         </button>
       ))}
     </div>
@@ -156,7 +158,7 @@ function AthleteProfile({ athlete, trainerId, onBack }) {
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
                 {[["Peso",athlete.weight?""+athlete.weight+" kg":"—"],["Altura",athlete.height?""+athlete.height+" cm":"—"],["Edad",athlete.age?""+athlete.age+" años":"—"],["Sexo",athlete.sex||"—"]].map(([k,v])=>(
                   <div key={k}>
-                    <div style={{color:S.text3,fontSize:11,marginBottom:2}}>{k}</div>
+                    <div style={{color:S.text2,fontSize:12,marginBottom:3}}>{k}</div>
                     <div style={{color:S.text,fontWeight:700,fontSize:15}}>{v}</div>
                   </div>
                 ))}
@@ -266,7 +268,7 @@ function RoutineEditor({ athleteId, trainerId }) {
   return (
     <div>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-        <div style={{color:S.text3,fontSize:11}}>Planifica la semana de tu atleta</div>
+        <div style={{color:S.text2,fontSize:13}}>Planifica la semana de tu atleta</div>
         <Btn label="Guardar" onClick={save} loading={saving} />
       </div>
       <Ok m={ok} />
@@ -369,7 +371,7 @@ function NutritionEditor({ athleteId, trainerId, athleteData, preferences }) {
   return (
     <div>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-        <div style={{color:S.text3,fontSize:11}}>Plan nutricional personalizado</div>
+        <div style={{color:S.text2,fontSize:13}}>Plan nutricional personalizado</div>
         <Btn label="Guardar" onClick={save} loading={saving} />
       </div>
       <Ok m={ok} />
@@ -479,13 +481,13 @@ function InvitesTab({ trainerId }) {
         <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="correo@ejemplo.com" style={inp} />
         <Err m={error}/><Ok m={ok}/>
         <Btn label="Generar código de invitación" onClick={createInvite} loading={creating} />
-        <div style={{color:S.text3,fontSize:11,marginTop:10,lineHeight:1.6}}>El código será válido 7 días. Compártelo con tu atleta para que pueda registrarse.</div>
+        <div style={{color:S.text2,fontSize:12,marginTop:10,lineHeight:1.6}}>El código será válido 7 días. Compártelo con tu atleta para que pueda registrarse.</div>
       </div>
 
       {/* Lista de invitaciones */}
-      <div style={{color:S.text3,fontSize:10,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",marginBottom:12}}>Invitaciones enviadas</div>
-      {loading ? <div style={{color:S.text3,textAlign:"center",padding:20,fontSize:13}}>Cargando...</div> :
-        !invites.length ? <div style={{color:S.text3,textAlign:"center",padding:20,fontSize:13}}>No has enviado ninguna invitación todavía.</div> :
+      <div style={{color:S.text2,fontSize:12,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",marginBottom:12}}>Invitaciones enviadas</div>
+      {loading ? <div style={{color:S.text2,textAlign:"center",padding:20,fontSize:14}}>Cargando...</div> :
+        !invites.length ? <div style={{color:S.text2,textAlign:"center",padding:20,fontSize:14}}>No has enviado ninguna invitación todavía.</div> :
         invites.map(inv => {
           const expired = isExpired(inv.expires_at);
           const statusColor = inv.used?"#4caf50":expired?"#ff4444":S.accent;
@@ -495,7 +497,7 @@ function InvitesTab({ trainerId }) {
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
                 <div>
                   <div style={{color:S.text,fontWeight:700,fontSize:14}}>{inv.athlete_name}</div>
-                  <div style={{color:S.text3,fontSize:12,marginTop:2}}>{inv.athlete_email}</div>
+                  <div style={{color:S.text2,fontSize:13,marginTop:3}}>{inv.athlete_email}</div>
                 </div>
                 <span style={{fontSize:10,fontWeight:700,color:statusColor,background:`${statusColor}15`,borderRadius:20,padding:"3px 10px",textTransform:"uppercase",letterSpacing:0.5}}>
                   {statusLabel}
@@ -503,11 +505,11 @@ function InvitesTab({ trainerId }) {
               </div>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <div>
-                  <div style={{fontFamily:"monospace",fontSize:16,fontWeight:800,color:inv.used||expired?S.text3:S.accent,letterSpacing:2}}>{inv.code}</div>
-                  <div style={{color:S.text3,fontSize:11,marginTop:2}}>Expira: {fmtDate(inv.expires_at)}</div>
+                  <div style={{fontFamily:"monospace",fontSize:20,fontWeight:900,color:inv.used||expired?S.text3:S.accent,letterSpacing:3}}>{inv.code}</div>
+                  <div style={{color:S.text2,fontSize:12,marginTop:4}}>Expira: {fmtDate(inv.expires_at)}</div>
                 </div>
                 {!inv.used && !expired && (
-                  <button onClick={()=>revokeInvite(inv.id)} style={{background:"none",border:`1px solid ${S.border2}`,borderRadius:8,color:S.text3,fontSize:11,padding:"5px 10px",cursor:"pointer"}}>
+                  <button onClick={()=>revokeInvite(inv.id)} style={{background:"none",border:`1px solid ${S.border2}`,borderRadius:8,color:S.text2,fontSize:12,padding:"6px 12px",fontWeight:600,cursor:"pointer"}}>
                     Revocar
                   </button>
                 )}
